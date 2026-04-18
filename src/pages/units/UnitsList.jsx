@@ -9,35 +9,59 @@ export default function UnitsList() {
 
     useEffect(() => {
         api.get("/units")
-            .then((response) => setUnits(response.data))
+            .then((res) => setUnits(res.data))
             .catch(() => setError("Erro ao carregar unidades."))
             .finally(() => setLoading(false));
     }, []);
 
     return (
-        <MainLayout title="Unidades">
+        <MainLayout title="Unidades" subtitle="Unidades de medida cadastradas">
+
             {loading && (
-                <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
-                    Carregando...
+                <div style={{ background: "#fff", borderRadius: "12px", padding: "32px", textAlign: "center", border: "1px solid #ede9e3", color: "#9b948c", fontFamily: "system-ui", fontSize: "14px" }}>
+                    Carregando unidades...
                 </div>
             )}
 
             {error && (
-                <div className="rounded-3xl bg-red-50 p-6 text-red-700 shadow-sm ring-1 ring-red-100">
+                <div style={{ background: "#fff8f8", borderRadius: "12px", padding: "20px", border: "1px solid #fddcdc", color: "#c05050", fontFamily: "system-ui", fontSize: "14px" }}>
                     {error}
                 </div>
             )}
 
             {!loading && !error && (
-                <div className="grid gap-4">
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "14px" }}>
                     {units.map((unit) => (
                         <div
                             key={unit.id}
-                            className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-rose-100"
+                            style={{
+                                background: "#fff", borderRadius: "12px",
+                                padding: "20px 22px", border: "1px solid #ede9e3",
+                                position: "relative", overflow: "hidden",
+                            }}
                         >
-                            <p className="text-lg font-semibold text-[#5a2d3a]">{unit.nome}</p>
-                            <p className="mt-2 text-sm text-stone-600">Sigla: {unit.sigla}</p>
-                            <p className="text-sm text-stone-600">Tipo: {unit.tipo}</p>
+                            <div style={{
+                                position: "absolute", top: 0, left: 0,
+                                width: "3px", height: "100%",
+                                background: "#e8b86d", borderRadius: "12px 0 0 12px",
+                            }} />
+                            <div style={{ fontSize: "16px", fontWeight: "700", color: "#1c1917", marginBottom: "8px" }}>
+                                {unit.nome}
+                            </div>
+                            <div style={{ display: "flex", gap: "8px" }}>
+                                <span style={{
+                                    background: "#f5f0e8", color: "#8a6f3e", fontSize: "11px",
+                                    fontFamily: "system-ui", fontWeight: "600", padding: "2px 8px", borderRadius: "20px",
+                                }}>
+                                    {unit.sigla}
+                                </span>
+                                <span style={{
+                                    background: "#f0f7f3", color: "#4a8a6a", fontSize: "11px",
+                                    fontFamily: "system-ui", fontWeight: "600", padding: "2px 8px", borderRadius: "20px",
+                                }}>
+                                    {unit.tipo}
+                                </span>
+                            </div>
                         </div>
                     ))}
                 </div>

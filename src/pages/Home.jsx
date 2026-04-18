@@ -1,42 +1,52 @@
 import MainLayout from "../components/layout/MainLayout";
 
+const stats = [
+    { label: "Produtos Ativos", value: "12", delta: "cadastros no sistema", color: "#e8b86d" },
+    { label: "Pedidos", value: "8", delta: "em acompanhamento", color: "#8db4a0" },
+    { label: "Lucro Estimado", value: "R$ 1.240", delta: "baseado nos produtos", color: "#c4a0c8" },
+];
+
 export default function Home() {
     return (
-        <MainLayout title="Home">
-            <div className="grid gap-6 md:grid-cols-3">
-                <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
-                    <p className="text-sm text-stone-500">Produtos</p>
-                    <h3 className="mt-3 text-3xl font-bold text-[#5a2d3a]">12</h3>
-                    <p className="mt-2 text-sm text-stone-500">
-                        Cadastros ativos no sistema
-                    </p>
-                </div>
+        <MainLayout title="Home" subtitle="Visão geral da confeitaria">
 
-                <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
-                    <p className="text-sm text-stone-500">Pedidos</p>
-                    <h3 className="mt-3 text-3xl font-bold text-[#5a2d3a]">8</h3>
-                    <p className="mt-2 text-sm text-stone-500">
-                        Pedidos em acompanhamento
-                    </p>
-                </div>
-
-                <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
-                    <p className="text-sm text-stone-500">Lucro estimado</p>
-                    <h3 className="mt-3 text-3xl font-bold text-[#5a2d3a]">R$ 1.240</h3>
-                    <p className="mt-2 text-sm text-stone-500">
-                        Baseado nos produtos cadastrados
-                    </p>
-                </div>
+            {/* Stats */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "24px" }}>
+                {stats.map((stat) => (
+                    <div key={stat.label} style={{
+                        background: "#fff", borderRadius: "12px",
+                        padding: "20px 22px", border: "1px solid #ede9e3",
+                        position: "relative", overflow: "hidden",
+                    }}>
+                        <div style={{
+                            position: "absolute", top: 0, left: 0,
+                            width: "3px", height: "100%",
+                            background: stat.color, borderRadius: "12px 0 0 12px",
+                        }} />
+                        <div style={{ fontSize: "11px", color: "#9b948c", fontFamily: "system-ui", marginBottom: "8px", letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                            {stat.label}
+                        </div>
+                        <div style={{ fontSize: "28px", fontWeight: "700", color: "#1c1917", letterSpacing: "-1px", lineHeight: 1 }}>
+                            {stat.value}
+                        </div>
+                        <div style={{ fontSize: "11px", color: "#9b948c", marginTop: "6px", fontFamily: "system-ui" }}>
+                            {stat.delta}
+                        </div>
+                    </div>
+                ))}
             </div>
 
-            <div className="mt-8 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-rose-100">
-                <h3 className="text-xl font-semibold text-[#5a2d3a]">
+            {/* Welcome card */}
+            <div style={{
+                background: "#fff", borderRadius: "12px",
+                padding: "28px 32px", border: "1px solid #ede9e3",
+            }}>
+                <div style={{ fontSize: "18px", fontWeight: "700", color: "#1c1917", marginBottom: "10px" }}>
                     Bem-vindo ao sistema
-                </h3>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-600">
-                    Aqui você vai organizar produtos, custos, preços e outros dados da
-                    confeitaria em uma estrutura mais profissional, com visual leve,
-                    elegante e fácil de usar.
+                </div>
+                <p style={{ fontSize: "14px", color: "#7a736c", lineHeight: "1.7", maxWidth: "600px", fontFamily: "system-ui" }}>
+                    Aqui você organiza produtos, custos, preços e outros dados da confeitaria de forma profissional,
+                    com visual leve, elegante e fácil de usar.
                 </p>
             </div>
         </MainLayout>

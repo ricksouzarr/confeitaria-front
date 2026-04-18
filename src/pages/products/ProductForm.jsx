@@ -1,18 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import api from "../../services/api";
 
-export default function ProductForm() {
-    const [form, setForm] = useState({
-        nome: "",
-        rendimento: "",
-        markupTotal: "",
-        markupRendimento: "",
-        horasMaoDeObra: "",
-    });
+const initialForm = {
+    nome: "",
+    rendimento: "",
+    markupTotal: "",
+    markupRendimento: "",
+    horasMaoDeObra: "",
+};
 
+export default function ProductForm() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const isEditing = Boolean(id);
+
+    const [form, setForm] = useState(initialForm);
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(isEditing);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (!isEditing) return;
+
+        async function loadProduct() {
+            setLoading(true);
+            setError("");
+
+            try {
+                const res = await api.get(`/products/${id}`);
+                const product = res.data;
+
+                setForm({
+                    nome: product.nome ?? "",
+                    rendimento: product.rendimento ?? "",
+                    markupTotal: product.markupTotal ?? "",
+                    markupRendimento: product.markupRendimento ?? "",
+                    horasMaoDeObra: product.horasMaoDeObra ?? "",
+                });
+            } catch (e) {
+                console.error(e);
+                setError("Erro ao carregar produto para edição.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadProduct();
+    }, [id, isEditing]);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -23,95 +60,250 @@ export default function ProductForm() {
         e.preventDefault();
         setMessage("");
         setError("");
+        setSaving(true);
+
+        const payload = {
+            nome: form.nome,
+            rendimento: Number(form.rendimento),
+            markupTotal: Number(form.markupTotal),
+            markupRendimento: Number(form.markupRendimento),
+            horasMaoDeObra: Number(form.horasMaoDeObra),
+        };
 
         try {
-            await api.post("/products", {
-                nome: form.nome,
-                rendimento: Number(form.rendimento),
-                markupTotal: Number(form.markupTotal),
-                markupRendimento: Number(form.markupRendimento),
-                horasMaoDeObra: Number(form.horasMaoDeObra),
-            });
-
-            setMessage("Produto cadastrado com sucesso.");
-            setForm({
-                nome: "",
-                rendimento: "",
-                markupTotal: "",
-                markupRendimento: "",
-                horasMaoDeObra: "",
-            });
-
+            if (isEditing) {
+                await api.put(`/products/${id}`, payload);
+                navigate("/produtos");
+            } else {
+                await api.post("/products", payload);
+                setMessage("Produto cadastrado com sucesso.");
+                setForm(initialForm);
+            }
         } catch (e) {
-            setError("Erro ao cadastrar produto.");
             console.error(e);
+            setError(
+                isEditing
+                    ? "Erro ao alterar produto."
+                    : "Erro ao cadastrar produto."
+            );
+        } finally {
+            setSaving(false);
         }
     }
 
     return (
-        <MainLayout title="Cadastro de Produto">
-            <div className="max-w-2xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-rose-100">
+        <MainLayout
+            title={isEditing ? "Alterar Produto" : "Cadastro de Produto"}
+            subtitle={
+                isEditing
+                    ? "Edite as informações do produto"
+                    : "Cadastre um novo produto"
+            }
+        >
+            {loading ? (
+                <div
+                    style={{
+                        background: "#fff",
+                        borderRadius: "14px",
+                        border: "1px solid #ede9e3",
+                        padding: "32px",
+                        color: "#9b948c",
+                        fontFamily: "system-ui",
+                        fontSize: "14px",
+                    }}
+                >
+                    Carregando produto...
+                </div>
+            ) : (
+                <div
+                    style={{
+                        background: "#fff",
+                        borderRadius: "14px",
+                        border: "1px solid #ede9e3",
+                        padding: "24px",
+                        maxWidth: "720px",
+                    }}
+                >
+                    <form onSubmit={handleSubmit}>
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr 1fr",
+                                gap: "16px",
+                            }}
+                        >
+                            <div style={{ gridColumn: "1 / -1" }}>
+                                <label style={labelStyle}>Nome do Produto</label>
+                                <input
+                                    name="nome"
+                                    value={form.nome}
+                                    onChange={handleChange}
+                                    placeholder="Ex: Bolo de chocolate"
+                                    style={inputStyle}
+                                />
+                            </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                            <div>
+                                <label style={labelStyle}>Rendimento</label>
+                                <input
+                                    name="rendimento"
+                                    type="number"
+                                    value={form.rendimento}
+                                    onChange={handleChange}
+                                    placeholder="Ex: 10"
+                                    style={inputStyle}
+                                />
+                            </div>
 
-                    <input
-                        name="nome"
-                        placeholder="Nome do produto"
-                        value={form.nome}
-                        onChange={handleChange}
-                        className="w-full rounded-2xl border px-4 py-3"
-                    />
+                            <div>
+                                <label style={labelStyle}>Horas de Mão de Obra</label>
+                                <input
+                                    name="horasMaoDeObra"
+                                    type="number"
+                                    step="0.01"
+                                    value={form.horasMaoDeObra}
+                                    onChange={handleChange}
+                                    placeholder="Ex: 2"
+                                    style={inputStyle}
+                                />
+                            </div>
 
-                    <input
-                        name="rendimento"
-                        type="number"
-                        placeholder="Rendimento (ex: 6 fatias)"
-                        value={form.rendimento}
-                        onChange={handleChange}
-                        className="w-full rounded-2xl border px-4 py-3"
-                    />
+                            <div>
+                                <label style={labelStyle}>Markup Total</label>
+                                <input
+                                    name="markupTotal"
+                                    type="number"
+                                    step="0.01"
+                                    value={form.markupTotal}
+                                    onChange={handleChange}
+                                    placeholder="Ex: 2.5"
+                                    style={inputStyle}
+                                />
+                            </div>
 
-                    <input
-                        name="markupTotal"
-                        type="number"
-                        step="0.01"
-                        placeholder="Markup Total"
-                        value={form.markupTotal}
-                        onChange={handleChange}
-                        className="w-full rounded-2xl border px-4 py-3"
-                    />
+                            <div>
+                                <label style={labelStyle}>Markup por Rendimento</label>
+                                <input
+                                    name="markupRendimento"
+                                    type="number"
+                                    step="0.01"
+                                    value={form.markupRendimento}
+                                    onChange={handleChange}
+                                    placeholder="Ex: 1.8"
+                                    style={inputStyle}
+                                />
+                            </div>
+                        </div>
 
-                    <input
-                        name="markupRendimento"
-                        type="number"
-                        step="0.01"
-                        placeholder="Markup por rendimento"
-                        value={form.markupRendimento}
-                        onChange={handleChange}
-                        className="w-full rounded-2xl border px-4 py-3"
-                    />
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "10px",
+                                marginTop: "24px",
+                            }}
+                        >
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                style={{
+                                    background:
+                                        "linear-gradient(135deg, #e8b86d 0%, #c9924a 100%)",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    padding: "10px 18px",
+                                    color: "white",
+                                    fontSize: "13px",
+                                    fontWeight: "600",
+                                    fontFamily: "system-ui",
+                                    cursor: saving ? "not-allowed" : "pointer",
+                                    opacity: saving ? 0.7 : 1,
+                                    boxShadow: "0 2px 8px rgba(232,184,109,0.4)",
+                                }}
+                            >
+                                {saving
+                                    ? (isEditing ? "Salvando..." : "Cadastrando...")
+                                    : (isEditing ? "Salvar alterações" : "Salvar produto")}
+                            </button>
 
-                    <input
-                        name="horasMaoDeObra"
-                        type="number"
-                        step="0.01"
-                        placeholder="Horas de mão de obra"
-                        value={form.horasMaoDeObra}
-                        onChange={handleChange}
-                        className="w-full rounded-2xl border px-4 py-3"
-                    />
+                            <button
+                                type="button"
+                                onClick={() => navigate("/produtos")}
+                                style={{
+                                    background: "#fff",
+                                    border: "1px solid #e8e3da",
+                                    borderRadius: "8px",
+                                    padding: "10px 18px",
+                                    color: "#5a5450",
+                                    fontSize: "13px",
+                                    fontWeight: "600",
+                                    fontFamily: "system-ui",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Voltar
+                            </button>
+                        </div>
+                    </form>
 
-                    <button
-                        type="submit"
-                        className="rounded-2xl bg-[#5a2d3a] px-6 py-3 text-white"
-                    >
-                        Salvar produto
-                    </button>
-                </form>
+                    {message && (
+                        <div
+                            style={{
+                                marginTop: "16px",
+                                background: "#f5fbf6",
+                                border: "1px solid #d7eddc",
+                                color: "#2f7a43",
+                                borderRadius: "10px",
+                                padding: "12px 14px",
+                                fontSize: "13px",
+                                fontFamily: "system-ui",
+                            }}
+                        >
+                            {message}
+                        </div>
+                    )}
 
-                {message && <p className="mt-4 text-green-600">{message}</p>}
-                {error && <p className="mt-4 text-red-600">{error}</p>}
-            </div>
+                    {error && (
+                        <div
+                            style={{
+                                marginTop: "16px",
+                                background: "#fff8f8",
+                                border: "1px solid #fddcdc",
+                                color: "#c05050",
+                                borderRadius: "10px",
+                                padding: "12px 14px",
+                                fontSize: "13px",
+                                fontFamily: "system-ui",
+                            }}
+                        >
+                            {error}
+                        </div>
+                    )}
+                </div>
+            )}
         </MainLayout>
     );
 }
+
+const labelStyle = {
+    display: "block",
+    marginBottom: "6px",
+    fontSize: "12px",
+    fontWeight: "700",
+    color: "#6b6257",
+    fontFamily: "system-ui",
+    textTransform: "uppercase",
+    letterSpacing: "0.4px",
+};
+
+const inputStyle = {
+    width: "100%",
+    border: "1px solid #e8e3da",
+    borderRadius: "10px",
+    padding: "11px 12px",
+    fontSize: "14px",
+    color: "#1c1917",
+    background: "#fff",
+    outline: "none",
+    fontFamily: "system-ui",
+    boxSizing: "border-box",
+};
