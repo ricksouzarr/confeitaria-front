@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 const menuItems = [
     { label: "Home", path: "/" },
     { label: "Produtos", path: "/produtos" },
-    { label: "Cadastrar Produtos", path: "/produtos/cadastro" },
+    { label: "Cadastrar Produto", path: "/produtos/cadastro" },
     { label: "Unidades", path: "/unidades" },
 ];
 
