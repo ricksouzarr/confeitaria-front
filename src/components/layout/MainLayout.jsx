@@ -4,7 +4,9 @@ import { Link, useLocation } from "react-router-dom";
 const menuItems = [
     { label: "Home", path: "/", icon: "⊞" },
     { label: "Produtos", path: "/produtos", icon: "🎂" },
-    { label: "Unidades", path: "/unidades", icon: "📦" },
+    { label: "Ingredientes", path: "/ingredientes", icon: "🥛" },
+    { label: "Embalagens", path: "/embalagens", icon: "📦" },
+    { label: "Unidades", path: "/unidades", icon: "📏" },
     {
         label: "Mão de Obra",
         path: "/configuracoes/mao-de-obra",
@@ -63,7 +65,10 @@ export default function MainLayout({ title, subtitle, children }) {
                 {/* Nav */}
                 <nav style={{ padding: "12px 10px", flex: 1 }}>
                     {menuItems.map((item) => {
-                        const active = location.pathname === item.path;
+                        const active =
+                            item.path === "/"
+                                ? location.pathname === item.path
+                                : location.pathname.startsWith(item.path);
                         return (
                             <Link
                                 key={item.path}

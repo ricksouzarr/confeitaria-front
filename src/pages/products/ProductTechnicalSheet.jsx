@@ -20,6 +20,13 @@ export default function ProductTechnicalSheet() {
     const [savingIngredient, setSavingIngredient] = useState(false);
     const [ingredientFormError, setIngredientFormError] = useState("");
 
+    const [packagingModalOpen, setPackagingModalOpen] = useState(false);
+    const [packagings, setPackagings] = useState([]);
+    const [selectedPackagingId, setSelectedPackagingId] = useState("");
+    const [packagingQuantity, setPackagingQuantity] = useState("");
+    const [savingPackaging, setSavingPackaging] = useState(false);
+    const [packagingFormError, setPackagingFormError] = useState("");
+
     useEffect(() => {
         loadData();
     }, [id]);
@@ -35,12 +42,14 @@ export default function ProductTechnicalSheet() {
                 recipeItemsRes,
                 packagingItemsRes,
                 ingredientsRes,
+                packagingsRes,
             ] = await Promise.all([
                 api.get(`/products/${id}`),
                 api.get(`/recipe-items/product/${id}/ficha-tecnica`),
                 api.get(`/recipe-items`),
                 api.get(`/packaging-items`),
                 api.get(`/ingredients`),
+                api.get(`/packagings`),
             ]);
 
             const productId = Number(id);
@@ -58,6 +67,7 @@ export default function ProductTechnicalSheet() {
             setRecipeItems(filteredRecipeItems);
             setPackagingItems(filteredPackagingItems);
             setIngredients(ingredientsRes.data || []);
+            setPackagings(packagingsRes.data || []);
         } catch (e) {
             console.error(e);
 
@@ -69,6 +79,91 @@ export default function ProductTechnicalSheet() {
             setError(backendMessage);
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function handleDeleteIngredientItem(itemId, ingredientName) {
+        const confirmed = window.confirm(
+            `Tem certeza que deseja remover o ingrediente "${ingredientName}" da ficha técnica?`
+        );
+
+        if (!confirmed) return;
+
+        try {
+            await api.delete(`/recipe-items/${itemId}`);
+            await loadData();
+        } catch (e) {
+            console.error(e);
+
+            const backendMessage =
+                e?.response?.data?.message ||
+                e?.response?.data?.error ||
+                "Erro ao remover ingrediente da ficha técnica.";
+
+            setError(backendMessage);
+        }
+    }
+
+    async function handleDeletePackagingItem(itemId, packagingName) {
+        const confirmed = window.confirm(
+            `Tem certeza que deseja remover a embalagem "${packagingName}" da ficha técnica?`
+        );
+
+        if (!confirmed) return;
+
+        try {
+            await api.delete(`/packaging-items/${itemId}`);
+            await loadData();
+        } catch (e) {
+            console.error(e);
+
+            const backendMessage =
+                e?.response?.data?.message ||
+                e?.response?.data?.error ||
+                "Erro ao remover embalagem da ficha técnica.";
+
+            setError(backendMessage);
+        }
+    }
+
+    async function handleAddPackaging(e) {
+        e.preventDefault();
+        setPackagingFormError("");
+
+        if (!selectedPackagingId) {
+            setPackagingFormError("Selecione uma embalagem.");
+            return;
+        }
+
+        if (!packagingQuantity || Number(packagingQuantity) <= 0) {
+            setPackagingFormError("Informe uma quantidade válida.");
+            return;
+        }
+
+        try {
+            setSavingPackaging(true);
+
+            await api.post("/packaging-items", {
+                product: { id: Number(id) },
+                packaging: { id: Number(selectedPackagingId) },
+                quantidade: Number(packagingQuantity),
+            });
+
+            setPackagingModalOpen(false);
+            setSelectedPackagingId("");
+            setPackagingQuantity("");
+            await loadData();
+        } catch (e) {
+            console.error(e);
+
+            const backendMessage =
+                e?.response?.data?.message ||
+                e?.response?.data?.error ||
+                "Erro ao adicionar embalagem.";
+
+            setPackagingFormError(backendMessage);
+        } finally {
+            setSavingPackaging(false);
         }
     }
 
@@ -445,6 +540,7 @@ export default function ProductTechnicalSheet() {
                             { key: "quantidade", label: "Quantidade" },
                             { key: "custoUnitario", label: "Custo unitário" },
                             { key: "custoTotal", label: "Custo total" },
+                            { key: "acoes", label: "Ações" },
                         ]}
                         rows={recipeItems.map((item) => ({
                             id: item.id,
@@ -453,7 +549,28 @@ export default function ProductTechnicalSheet() {
                             quantidade: formatNumber(item.quantidade),
                             custoUnitario: formatCurrency(item.ingredient?.custoUnitario),
                             custoTotal: formatCurrency(item.custoTotal),
+                            acoes: (
+                                <button
+                                    onClick={() =>
+                                        handleDeleteIngredientItem(item.id, item.ingredient?.nome || "item")
+                                    }
+                                    style={{
+                                        border: "1px solid #f2caca",
+                                        background: "#fff8f8",
+                                        color: "#c05050",
+                                        borderRadius: "8px",
+                                        padding: "8px 12px",
+                                        fontSize: "12px",
+                                        fontWeight: "600",
+                                        fontFamily: "system-ui",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Excluir
+                                </button>
+                            ),
                         }))}
+
                     />
 
                     <ItemsTableCard
@@ -461,13 +578,14 @@ export default function ProductTechnicalSheet() {
                         subtitle="Itens de embalagem vinculados ao produto"
                         emptyText="Nenhuma embalagem vinculada a este produto."
                         actionLabel="+ Adicionar embalagem"
-                        onAction={() => {}}
+                        onAction={() => setPackagingModalOpen(true)}
                         columns={[
                             { key: "nome", label: "Embalagem" },
                             { key: "unidade", label: "Unidade" },
                             { key: "quantidade", label: "Quantidade" },
                             { key: "custoUnitario", label: "Custo unitário" },
                             { key: "custoTotal", label: "Custo total" },
+                            { key: "acoes", label: "Ações" },
                         ]}
                         rows={packagingItems.map((item) => ({
                             id: item.id,
@@ -476,6 +594,26 @@ export default function ProductTechnicalSheet() {
                             quantidade: formatNumber(item.quantidade),
                             custoUnitario: formatCurrency(item.packaging?.custoUnitario),
                             custoTotal: formatCurrency(item.custoTotal),
+                            acoes: (
+                                <button
+                                    onClick={() =>
+                                        handleDeletePackagingItem(item.id, item.packaging?.nome || "item")
+                                    }
+                                    style={{
+                                        border: "1px solid #f2caca",
+                                        background: "#fff8f8",
+                                        color: "#c05050",
+                                        borderRadius: "8px",
+                                        padding: "8px 12px",
+                                        fontSize: "12px",
+                                        fontWeight: "600",
+                                        fontFamily: "system-ui",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Excluir
+                                </button>
+                            ),
                         }))}
                     />
                 </div>
@@ -631,6 +769,161 @@ export default function ProductTechnicalSheet() {
                                 }}
                             >
                                 {savingIngredient ? "Salvando..." : "Salvar ingrediente"}
+                            </button>
+                        </div>
+                    </form>
+                </ModalOverlay>
+            )}
+            {packagingModalOpen && (
+                <ModalOverlay onClose={() => setPackagingModalOpen(false)}>
+                    <form onSubmit={handleAddPackaging}>
+                        <div
+                            style={{
+                                padding: "20px",
+                                borderBottom: "1px solid #f2ede6",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: "12px",
+                            }}
+                        >
+                            <div>
+                                <div
+                                    style={{
+                                        fontSize: "16px",
+                                        fontWeight: "700",
+                                        color: "#1c1917",
+                                    }}
+                                >
+                                    Adicionar embalagem
+                                </div>
+                                <div
+                                    style={{
+                                        fontSize: "12px",
+                                        color: "#9b948c",
+                                        fontFamily: "system-ui",
+                                        marginTop: "4px",
+                                    }}
+                                >
+                                    Vincule uma embalagem à ficha técnica do produto
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => setPackagingModalOpen(false)}
+                                style={{
+                                    border: "1px solid #e8e3da",
+                                    background: "#fff",
+                                    color: "#6b6257",
+                                    borderRadius: "8px",
+                                    padding: "8px 12px",
+                                    fontSize: "12px",
+                                    fontWeight: "600",
+                                    fontFamily: "system-ui",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Fechar
+                            </button>
+                        </div>
+
+                        <div
+                            style={{
+                                padding: "20px",
+                                display: "grid",
+                                gap: "16px",
+                            }}
+                        >
+                            <FormField label="Embalagem">
+                                <select
+                                    value={selectedPackagingId}
+                                    onChange={(e) => setSelectedPackagingId(e.target.value)}
+                                    style={inputStyle}
+                                >
+                                    <option value="">Selecione uma embalagem</option>
+                                    {packagings.map((packaging) => (
+                                        <option key={packaging.id} value={packaging.id}>
+                                            {packaging.nome} - {formatCurrency(packaging.custoUnitario)} /{" "}
+                                            {getUnitLabel(packaging.unidade)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </FormField>
+
+                            <FormField label="Quantidade usada">
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={packagingQuantity}
+                                    onChange={(e) => setPackagingQuantity(e.target.value)}
+                                    placeholder="Ex: 1"
+                                    style={inputStyle}
+                                />
+                            </FormField>
+
+                            {packagingFormError && (
+                                <div
+                                    style={{
+                                        background: "#fff8f8",
+                                        border: "1px solid #f6d6d6",
+                                        color: "#c05050",
+                                        borderRadius: "10px",
+                                        padding: "12px 14px",
+                                        fontSize: "12px",
+                                        fontFamily: "system-ui",
+                                    }}
+                                >
+                                    {packagingFormError}
+                                </div>
+                            )}
+                        </div>
+
+                        <div
+                            style={{
+                                padding: "20px",
+                                borderTop: "1px solid #f2ede6",
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                gap: "10px",
+                            }}
+                        >
+                            <button
+                                type="button"
+                                onClick={() => setPackagingModalOpen(false)}
+                                style={{
+                                    border: "1px solid #e8e3da",
+                                    background: "#fff",
+                                    color: "#6b6257",
+                                    borderRadius: "8px",
+                                    padding: "10px 14px",
+                                    fontSize: "12px",
+                                    fontWeight: "600",
+                                    fontFamily: "system-ui",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Cancelar
+                            </button>
+
+                            <button
+                                type="submit"
+                                disabled={savingPackaging}
+                                style={{
+                                    background: "linear-gradient(135deg, #e8b86d 0%, #c9924a 100%)",
+                                    border: "none",
+                                    color: "#fff",
+                                    borderRadius: "8px",
+                                    padding: "10px 14px",
+                                    fontSize: "12px",
+                                    fontWeight: "700",
+                                    fontFamily: "system-ui",
+                                    cursor: savingPackaging ? "not-allowed" : "pointer",
+                                    opacity: savingPackaging ? 0.7 : 1,
+                                }}
+                            >
+                                {savingPackaging ? "Salvando..." : "Salvar embalagem"}
                             </button>
                         </div>
                     </form>
@@ -843,7 +1136,7 @@ function ItemsTableCard({
                                             fontSize: "13px",
                                             color: "#3f3a36",
                                             fontFamily: "system-ui",
-                                            whiteSpace: "nowrap",
+                                            whiteSpace: column.key === "acoes" ? "normal" : "nowrap",
                                         }}
                                     >
                                         {row[column.key]}
