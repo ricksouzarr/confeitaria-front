@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import ProductForm from "../pages/products/ProductForm";
 import UnitsList from "../pages/units/UnitsList";
+import UnitsForm from "../pages/units/UnitsForm";
 import ProductList from "../pages/products/ProductList";
 import ProductTechnicalSheet from "../pages/products/ProductTechnicalSheet";
 import LaborSettings from "../pages/settings/LaborSettings";
@@ -19,8 +20,13 @@ export default function AppRoutes() {
                 <Route path="/produtos/cadastro" element={<ProductForm />} />
                 <Route path="/produtos/editar/:id" element={<ProductForm />} />
                 <Route path="/produtos/:id/ficha-tecnica" element={<ProductTechnicalSheet />} />
+
                 <Route path="/unidades" element={<UnitsList />} />
+                <Route path="/unidades/cadastro" element={<UnitsForm />} />
+                <Route path="/unidades/editar/:id" element={<UnitsForm />} />
+
                 <Route path="/configuracoes/mao-de-obra" element={<LaborSettings />} />
+
                 <Route path="/ingredientes" element={<IngredientList />} />
                 <Route path="/ingredientes/cadastro" element={<IngredientForm />} />
                 <Route path="/ingredientes/editar/:id" element={<IngredientForm />} />
