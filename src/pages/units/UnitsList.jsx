@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import MainLayout from "../../components/layout/MainLayout";
 import api from "../../services/api";
 
-export default function UnitsList() {
+export function UnitsList() {
     const [units, setUnits] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -84,7 +84,7 @@ export default function UnitsList() {
                         gap: "8px",
                     }}
                 >
-                    <span style={{ color: "#9b948c", fontSize: "13px" }}>🔍</span>
+                    <span style={{color: "#9b948c", fontSize: "13px"}}>🔍</span>
                     <input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -96,7 +96,6 @@ export default function UnitsList() {
                             fontSize: "13px",
                             color: "#1c1917",
                             width: "220px",
-                            fontFamily: "system-ui",
                         }}
                     />
                 </div>
@@ -114,7 +113,6 @@ export default function UnitsList() {
                         display: "flex",
                         alignItems: "center",
                         gap: "6px",
-                        fontFamily: "system-ui",
                         boxShadow: "0 2px 8px rgba(232,184,109,0.4)",
                     }}
                 >
@@ -131,7 +129,6 @@ export default function UnitsList() {
                         textAlign: "center",
                         border: "1px solid #ede9e3",
                         color: "#9b948c",
-                        fontFamily: "system-ui",
                         fontSize: "14px",
                     }}
                 >
@@ -147,7 +144,6 @@ export default function UnitsList() {
                         padding: "20px",
                         border: "1px solid #fddcdc",
                         color: "#c05050",
-                        fontFamily: "system-ui",
                         fontSize: "14px",
                         marginBottom: "16px",
                     }}
@@ -167,7 +163,6 @@ export default function UnitsList() {
                                 textAlign: "center",
                                 border: "1px solid #ede9e3",
                                 color: "#9b948c",
-                                fontFamily: "system-ui",
                                 fontSize: "14px",
                             }}
                         >
@@ -225,13 +220,12 @@ export default function UnitsList() {
                                                 {unit.nome}
                                             </div>
 
-                                            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                                            <div style={{display: "flex", gap: "8px", flexWrap: "wrap"}}>
                                                 <span
                                                     style={{
                                                         background: "#f5f0e8",
                                                         color: "#8a6f3e",
                                                         fontSize: "11px",
-                                                        fontFamily: "system-ui",
                                                         fontWeight: "600",
                                                         padding: "2px 8px",
                                                         borderRadius: "20px",
@@ -245,7 +239,6 @@ export default function UnitsList() {
                                                         background: "#f0f7f3",
                                                         color: "#4a8a6a",
                                                         fontSize: "11px",
-                                                        fontFamily: "system-ui",
                                                         fontWeight: "600",
                                                         padding: "2px 8px",
                                                         borderRadius: "20px",
@@ -260,7 +253,6 @@ export default function UnitsList() {
                                             style={{
                                                 fontSize: "12px",
                                                 color: "#9b948c",
-                                                fontFamily: "system-ui",
                                                 fontWeight: "600",
                                             }}
                                         >
@@ -286,7 +278,6 @@ export default function UnitsList() {
                                                 padding: "8px 12px",
                                                 fontSize: "12px",
                                                 fontWeight: "600",
-                                                fontFamily: "system-ui",
                                                 textDecoration: "none",
                                                 display: "inline-flex",
                                                 alignItems: "center",
@@ -308,7 +299,6 @@ export default function UnitsList() {
                                                 padding: "8px 12px",
                                                 fontSize: "12px",
                                                 fontWeight: "600",
-                                                fontFamily: "system-ui",
                                                 cursor:
                                                     deletingId === unit.id
                                                         ? "not-allowed"

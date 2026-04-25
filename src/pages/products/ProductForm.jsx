@@ -9,6 +9,7 @@ const initialForm = {
     markupTotal: "",
     markupRendimento: "",
     horasMaoDeObra: "",
+    observacaoFichaTecnica:"",
 };
 
 export default function ProductForm() {
@@ -39,6 +40,7 @@ export default function ProductForm() {
                     markupTotal: product.markupTotal ?? "",
                     markupRendimento: product.markupRendimento ?? "",
                     horasMaoDeObra: product.horasMaoDeObra ?? "",
+                    observacaoFichaTecnica: product.observacaoFichaTecnica ?? "",
                 });
             } catch (e) {
                 console.error(e);
@@ -68,6 +70,7 @@ export default function ProductForm() {
             markupTotal: Number(form.markupTotal),
             markupRendimento: Number(form.markupRendimento),
             horasMaoDeObra: Number(form.horasMaoDeObra),
+            observacaoFichaTecnica: form.observacaoFichaTecnica || null,
         };
 
         try {
@@ -108,7 +111,6 @@ export default function ProductForm() {
                         border: "1px solid #ede9e3",
                         padding: "32px",
                         color: "#9b948c",
-                        fontFamily: "system-ui",
                         fontSize: "14px",
                     }}
                 >
@@ -193,6 +195,17 @@ export default function ProductForm() {
                                     style={inputStyle}
                                 />
                             </div>
+                            <div style={{ gridColumn: "1 / -1" }}>
+                                <label style={labelStyle}>Observações da Ficha Técnica</label>
+                                <textarea
+                                    name="observacaoFichaTecnica"
+                                    value={form.observacaoFichaTecnica}
+                                    onChange={handleChange}
+                                    placeholder="Ex: Assar 35 min a 180°C. Usar forma de 20cm. Gelar por 4 horas antes de decorar."
+                                    rows={4}
+                                    style={{ ...inputStyle, resize: "vertical", lineHeight: "1.6" }}
+                                />
+                            </div>
                         </div>
 
                         <div
@@ -214,7 +227,6 @@ export default function ProductForm() {
                                     color: "white",
                                     fontSize: "13px",
                                     fontWeight: "600",
-                                    fontFamily: "system-ui",
                                     cursor: saving ? "not-allowed" : "pointer",
                                     opacity: saving ? 0.7 : 1,
                                     boxShadow: "0 2px 8px rgba(232,184,109,0.4)",
@@ -236,7 +248,6 @@ export default function ProductForm() {
                                     color: "#5a5450",
                                     fontSize: "13px",
                                     fontWeight: "600",
-                                    fontFamily: "system-ui",
                                     cursor: "pointer",
                                 }}
                             >
@@ -255,7 +266,6 @@ export default function ProductForm() {
                                 borderRadius: "10px",
                                 padding: "12px 14px",
                                 fontSize: "13px",
-                                fontFamily: "system-ui",
                             }}
                         >
                             {message}
@@ -272,7 +282,6 @@ export default function ProductForm() {
                                 borderRadius: "10px",
                                 padding: "12px 14px",
                                 fontSize: "13px",
-                                fontFamily: "system-ui",
                             }}
                         >
                             {error}
@@ -290,7 +299,6 @@ const labelStyle = {
     fontSize: "12px",
     fontWeight: "700",
     color: "#6b6257",
-    fontFamily: "system-ui",
     textTransform: "uppercase",
     letterSpacing: "0.4px",
 };
@@ -304,6 +312,5 @@ const inputStyle = {
     color: "#1c1917",
     background: "#fff",
     outline: "none",
-    fontFamily: "system-ui",
     boxSizing: "border-box",
 };

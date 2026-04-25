@@ -87,7 +87,7 @@ export default function ProductList() {
                             fontSize: "13px",
                             color: "#1c1917",
                             width: "200px",
-                            fontFamily: "system-ui",
+
                         }}
                     />
                 </div>
@@ -105,7 +105,6 @@ export default function ProductList() {
                         display: "flex",
                         alignItems: "center",
                         gap: "6px",
-                        fontFamily: "system-ui",
                         boxShadow: "0 2px 8px rgba(232,184,109,0.4)",
                     }}
                 >
@@ -122,7 +121,6 @@ export default function ProductList() {
                         textAlign: "center",
                         border: "1px solid #ede9e3",
                         color: "#9b948c",
-                        fontFamily: "system-ui",
                         fontSize: "14px",
                     }}
                 >
@@ -138,7 +136,6 @@ export default function ProductList() {
                         padding: "20px",
                         border: "1px solid #fddcdc",
                         color: "#c05050",
-                        fontFamily: "system-ui",
                         fontSize: "14px",
                         marginBottom: "16px",
                     }}
@@ -180,7 +177,6 @@ export default function ProductList() {
                                     background: "#f5f0e8",
                                     color: "#8a6f3e",
                                     fontSize: "11px",
-                                    fontFamily: "system-ui",
                                     fontWeight: "600",
                                     padding: "2px 8px",
                                     borderRadius: "20px",
@@ -210,7 +206,6 @@ export default function ProductList() {
                                         textAlign: "left",
                                         fontSize: "10px",
                                         color: "#9b948c",
-                                        fontFamily: "system-ui",
                                         fontWeight: "700",
                                         letterSpacing: "0.8px",
                                         textTransform: "uppercase",
@@ -232,7 +227,6 @@ export default function ProductList() {
                                         padding: "32px 16px",
                                         textAlign: "center",
                                         color: "#9b948c",
-                                        fontFamily: "system-ui",
                                         fontSize: "13px",
                                     }}
                                 >
@@ -259,7 +253,6 @@ export default function ProductList() {
                                         fontSize: "13px",
                                         fontWeight: "600",
                                         color: "#8a6f3e",
-                                        fontFamily: "system-ui",
                                     }}
                                 >
                                     #{p.id}
@@ -306,7 +299,6 @@ export default function ProductList() {
                                         padding: "14px 16px",
                                         fontSize: "13px",
                                         color: "#5a5450",
-                                        fontFamily: "system-ui",
                                     }}
                                 >
                                     {p.rendimento}
@@ -317,7 +309,6 @@ export default function ProductList() {
                                         padding: "14px 16px",
                                         fontSize: "13px",
                                         color: "#5a5450",
-                                        fontFamily: "system-ui",
                                     }}
                                 >
                                     {p.markupTotal}
@@ -328,7 +319,6 @@ export default function ProductList() {
                                         padding: "14px 16px",
                                         fontSize: "13px",
                                         color: "#5a5450",
-                                        fontFamily: "system-ui",
                                     }}
                                 >
                                     {p.markupRendimento}
@@ -339,7 +329,6 @@ export default function ProductList() {
                                         padding: "14px 16px",
                                         fontSize: "13px",
                                         color: "#5a5450",
-                                        fontFamily: "system-ui",
                                     }}
                                 >
                                     {p.horasMaoDeObra}h
@@ -363,7 +352,6 @@ export default function ProductList() {
                                                 padding: "8px 12px",
                                                 fontSize: "12px",
                                                 fontWeight: "600",
-                                                fontFamily: "system-ui",
                                                 textDecoration: "none",
                                                 display: "inline-flex",
                                                 alignItems: "center",
@@ -384,7 +372,6 @@ export default function ProductList() {
                                                 padding: "8px 12px",
                                                 fontSize: "12px",
                                                 fontWeight: "600",
-                                                fontFamily: "system-ui",
                                                 textDecoration: "none",
                                                 display: "inline-flex",
                                                 alignItems: "center",
@@ -405,7 +392,6 @@ export default function ProductList() {
                                                 padding: "8px 12px",
                                                 fontSize: "12px",
                                                 fontWeight: "600",
-                                                fontFamily: "system-ui",
                                                 cursor: deletingId === p.id ? "not-allowed" : "pointer",
                                                 opacity: deletingId === p.id ? 0.7 : 1,
                                             }}
@@ -432,7 +418,6 @@ export default function ProductList() {
                             style={{
                                 fontSize: "11px",
                                 color: "#9b948c",
-                                fontFamily: "system-ui",
                             }}
                         >
                             Mostrando {filtered.length} de {products.length} produtos

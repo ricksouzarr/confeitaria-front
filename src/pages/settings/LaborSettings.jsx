@@ -130,7 +130,6 @@ export default function LaborSettings() {
                             style={{
                                 fontSize: "12px",
                                 color: "#9b948c",
-                                fontFamily: "system-ui",
                                 marginTop: "4px",
                                 lineHeight: 1.5,
                             }}
@@ -145,7 +144,6 @@ export default function LaborSettings() {
                                 padding: "24px 20px",
                                 color: "#8b8175",
                                 fontSize: "13px",
-                                fontFamily: "system-ui",
                             }}
                         >
                             Carregando configuração...
@@ -165,7 +163,6 @@ export default function LaborSettings() {
                                             fontSize: "12px",
                                             fontWeight: "700",
                                             color: "#6b6257",
-                                            fontFamily: "system-ui",
                                         }}
                                     >
                                         Custo por hora
@@ -186,7 +183,6 @@ export default function LaborSettings() {
                                             background: "#fff",
                                             fontSize: "14px",
                                             color: "#3f3a36",
-                                            fontFamily: "system-ui",
                                             outline: "none",
                                             boxSizing: "border-box",
                                         }}
@@ -208,7 +204,6 @@ export default function LaborSettings() {
                                             style={{
                                                 fontSize: "11px",
                                                 color: "#9b948c",
-                                                fontFamily: "system-ui",
                                                 textTransform: "uppercase",
                                                 letterSpacing: "0.6px",
                                                 fontWeight: "700",
@@ -237,7 +232,6 @@ export default function LaborSettings() {
                                             borderRadius: "10px",
                                             padding: "12px 14px",
                                             fontSize: "12px",
-                                            fontFamily: "system-ui",
                                         }}
                                     >
                                         {error}
@@ -253,7 +247,6 @@ export default function LaborSettings() {
                                             borderRadius: "10px",
                                             padding: "12px 14px",
                                             fontSize: "12px",
-                                            fontFamily: "system-ui",
                                         }}
                                     >
                                         {success}
@@ -280,7 +273,6 @@ export default function LaborSettings() {
                                         padding: "10px 16px",
                                         fontSize: "12px",
                                         fontWeight: "700",
-                                        fontFamily: "system-ui",
                                         cursor: saving ? "not-allowed" : "pointer",
                                         opacity: saving ? 0.7 : 1,
                                         boxShadow: "0 2px 8px rgba(232,184,109,0.28)",

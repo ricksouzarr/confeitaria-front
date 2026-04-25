@@ -23,13 +23,13 @@ export default function Home() {
                             width: "3px", height: "100%",
                             background: stat.color, borderRadius: "12px 0 0 12px",
                         }} />
-                        <div style={{ fontSize: "11px", color: "#9b948c", fontFamily: "system-ui", marginBottom: "8px", letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                        <div style={{ fontSize: "11px", color: "#9b948c", marginBottom: "8px", letterSpacing: "0.5px", textTransform: "uppercase" }}>
                             {stat.label}
                         </div>
                         <div style={{ fontSize: "28px", fontWeight: "700", color: "#1c1917", letterSpacing: "-1px", lineHeight: 1 }}>
                             {stat.value}
                         </div>
-                        <div style={{ fontSize: "11px", color: "#9b948c", marginTop: "6px", fontFamily: "system-ui" }}>
+                        <div style={{ fontSize: "11px", color: "#9b948c", marginTop: "6px",  }}>
                             {stat.delta}
                         </div>
                     </div>
@@ -44,7 +44,7 @@ export default function Home() {
                 <div style={{ fontSize: "18px", fontWeight: "700", color: "#1c1917", marginBottom: "10px" }}>
                     Bem-vindo ao sistema
                 </div>
-                <p style={{ fontSize: "14px", color: "#7a736c", lineHeight: "1.7", maxWidth: "600px", fontFamily: "system-ui" }}>
+                <p style={{ fontSize: "14px", color: "#7a736c", lineHeight: "1.7", maxWidth: "600px",  }}>
                     Aqui você organiza produtos, custos, preços e outros dados da confeitaria de forma profissional,
                     com visual leve, elegante e fácil de usar.
                 </p>

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import ProductForm from "../pages/products/ProductForm";
-import UnitsList from "../pages/units/UnitsList";
+import {UnitsList} from "../pages/units/UnitsList";
 import UnitsForm from "../pages/units/UnitsForm";
 import ProductList from "../pages/products/ProductList";
 import ProductTechnicalSheet from "../pages/products/ProductTechnicalSheet";

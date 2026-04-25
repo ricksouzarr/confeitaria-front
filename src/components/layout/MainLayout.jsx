@@ -55,7 +55,7 @@ export default function MainLayout({ title, subtitle, children }) {
                             <div style={{ color: "#f5f0e8", fontSize: "14px", fontWeight: "700", letterSpacing: "0.3px", whiteSpace: "nowrap" }}>
                                 Doce Gestão
                             </div>
-                            <div style={{ color: "#6b6560", fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", fontFamily: "system-ui", whiteSpace: "nowrap" }}>
+                            <div style={{ color: "#6b6560", fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", whiteSpace: "nowrap" }}>
                                 Confeitaria
                             </div>
                         </div>
@@ -91,7 +91,7 @@ export default function MainLayout({ title, subtitle, children }) {
                                 </span>
                                 {!collapsed && (
                                     <span style={{
-                                        fontSize: "13px", fontFamily: "system-ui",
+                                        fontSize: "13px",
                                         fontWeight: active ? "600" : "400", whiteSpace: "nowrap",
                                     }}>
                                         {item.label}
@@ -111,12 +111,12 @@ export default function MainLayout({ title, subtitle, children }) {
                         width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0,
                         background: "linear-gradient(135deg, #8db4a0, #5d9078)",
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: "13px", color: "white", fontWeight: "700", fontFamily: "system-ui",
+                        fontSize: "13px", color: "white", fontWeight: "700",
                     }}>A</div>
                     {!collapsed && (
                         <div>
-                            <div style={{ color: "#d4cfc9", fontSize: "12px", fontWeight: "600", fontFamily: "system-ui", whiteSpace: "nowrap" }}>Ana Souza</div>
-                            <div style={{ color: "#5a5450", fontSize: "10px", fontFamily: "system-ui" }}>Proprietária</div>
+                            <div style={{ color: "#d4cfc9", fontSize: "12px", fontWeight: "600", whiteSpace: "nowrap" }}>Ana Souza</div>
+                            <div style={{ color: "#5a5450", fontSize: "10px",  }}>Proprietária</div>
                         </div>
                     )}
                 </div>
@@ -136,7 +136,7 @@ export default function MainLayout({ title, subtitle, children }) {
                     justifyContent: "space-between",
                     flexShrink: 0,
                 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "16px", minHeight:"100vh", fontFamily:"'Poppins', system-ui, sans-serif" }}>
                         <button
                             onClick={() => setCollapsed(c => !c)}
                             style={{
@@ -150,7 +150,7 @@ export default function MainLayout({ title, subtitle, children }) {
                                 {title}
                             </div>
                             {subtitle && (
-                                <div style={{ fontSize: "11px", color: "#9b948c", fontFamily: "system-ui" }}>
+                                <div style={{ fontSize: "11px", color: "#9b948c",  }}>
                                     {subtitle}
                                 </div>
                             )}
@@ -159,7 +159,7 @@ export default function MainLayout({ title, subtitle, children }) {
                 </header>
 
                 {/* Page content */}
-                <main style={{ flex: 1, overflow: "auto", padding: "24px 28px" }}>
+                <main style={{ flex: 1, overflow: "auto", padding: "24px 28px", height:"calc(100vh - 60px)" }}>
                     {children}
                 </main>
             </div>

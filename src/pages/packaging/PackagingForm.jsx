@@ -130,7 +130,6 @@ export default function PackagingForm() {
                         border: "1px solid #ede9e3",
                         padding: "32px",
                         color: "#9b948c",
-                        fontFamily: "system-ui",
                         fontSize: "14px",
                     }}
                 >
@@ -222,7 +221,6 @@ export default function PackagingForm() {
                                             fontSize: "12px",
                                             fontWeight: "700",
                                             color: "#6b6257",
-                                            fontFamily: "system-ui",
                                             textTransform: "uppercase",
                                             letterSpacing: "0.4px",
                                             marginBottom: "6px",
@@ -236,7 +234,6 @@ export default function PackagingForm() {
                                             fontSize: "18px",
                                             fontWeight: "700",
                                             color: "#1c1917",
-                                            fontFamily: "system-ui",
                                         }}
                                     >
                                         R$ {custoUnitarioCalculado}
@@ -286,7 +283,6 @@ const labelStyle = {
     fontSize: "12px",
     fontWeight: "700",
     color: "#6b6257",
-    fontFamily: "system-ui",
     textTransform: "uppercase",
     letterSpacing: "0.4px",
 };
@@ -300,7 +296,6 @@ const inputStyle = {
     color: "#1c1917",
     background: "#fff",
     outline: "none",
-    fontFamily: "system-ui",
     boxSizing: "border-box",
 };
 
@@ -312,7 +307,6 @@ const secondaryButtonStyle = {
     color: "#5a5450",
     fontSize: "13px",
     fontWeight: "600",
-    fontFamily: "system-ui",
     cursor: "pointer",
 };
 
@@ -324,7 +318,6 @@ const successMessageStyle = {
     borderRadius: "10px",
     padding: "12px 14px",
     fontSize: "13px",
-    fontFamily: "system-ui",
 };
 
 const errorMessageStyle = {
@@ -335,7 +328,6 @@ const errorMessageStyle = {
     borderRadius: "10px",
     padding: "12px 14px",
     fontSize: "13px",
-    fontFamily: "system-ui",
 };
 
 function primaryButtonStyle(saving) {
@@ -347,7 +339,6 @@ function primaryButtonStyle(saving) {
         color: "white",
         fontSize: "13px",
         fontWeight: "600",
-        fontFamily: "system-ui",
         cursor: saving ? "not-allowed" : "pointer",
         opacity: saving ? 0.7 : 1,
         boxShadow: "0 2px 8px rgba(232,184,109,0.4)",
