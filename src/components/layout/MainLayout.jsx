@@ -7,11 +7,10 @@ const menuItems = [
     { label: "Ingredientes", path: "/ingredientes", icon: "🥛" },
     { label: "Embalagens", path: "/embalagens", icon: "📦" },
     { label: "Unidades", path: "/unidades", icon: "📏" },
-    {
-        label: "Mão de Obra",
-        path: "/configuracoes/mao-de-obra",
-        icon: "⏱️",
-    }
+    { label: "Mão de Obra", path: "/configuracoes/mao-de-obra", icon: "⏱️" },
+    { label: "Categorias", path: "/configuracoes/categorias", icon: "🏷️" },
+    { label: "Tipos", path: "/configuracoes/tipos", icon: "📋" },
+    { label: "Ocasiões", path: "/configuracoes/ocasioes", icon: "🎉" },
 ];
 
 export default function MainLayout({ title, subtitle, children }) {

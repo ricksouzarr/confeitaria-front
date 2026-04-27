@@ -10,6 +10,10 @@ const initialForm = {
     markupRendimento: "",
     horasMaoDeObra: "",
     observacaoFichaTecnica:"",
+    categoriaId: "",
+    tipoId: "",
+    ocasiaoId: "",
+    kit: false,
 };
 
 export default function ProductForm() {
@@ -22,6 +26,24 @@ export default function ProductForm() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(isEditing);
     const [saving, setSaving] = useState(false);
+
+    const [categories, setCategories] = useState([]);
+    const [types, setTypes] = useState([]);
+    const [occasions, setOccasions] = useState([]);
+
+    useEffect(() => {
+        async function loadOptions() {
+            const [catRes, typeRes, occRes] = await Promise.all([
+                api.get("/product-categories"),
+                api.get("/product-types"),
+                api.get("/product-occasions"),
+            ]);
+            setCategories(catRes.data);
+            setTypes(typeRes.data);
+            setOccasions(occRes.data);
+        }
+        loadOptions();
+    }, []);
 
     useEffect(() => {
         if (!isEditing) return;
@@ -41,6 +63,10 @@ export default function ProductForm() {
                     markupRendimento: product.markupRendimento ?? "",
                     horasMaoDeObra: product.horasMaoDeObra ?? "",
                     observacaoFichaTecnica: product.observacaoFichaTecnica ?? "",
+                    categoriaId: product.categoria?.id ?? "",
+                    tipoId: product.tipo?.id ?? "",
+                    ocasiaoId: product.ocasiao?.id ?? "",
+                    kit: product.kit ?? false,
                 });
             } catch (e) {
                 console.error(e);
@@ -71,6 +97,10 @@ export default function ProductForm() {
             markupRendimento: Number(form.markupRendimento),
             horasMaoDeObra: Number(form.horasMaoDeObra),
             observacaoFichaTecnica: form.observacaoFichaTecnica || null,
+            kit: form.kit,
+            categoria: form.categoriaId ? { id: Number(form.categoriaId) } : null,
+            tipo: form.tipoId ? { id: Number(form.tipoId) } : null,
+            ocasiao: form.ocasiaoId ? { id: Number(form.ocasiaoId) } : null,
         };
 
         try {
@@ -168,6 +198,55 @@ export default function ProductForm() {
                                     placeholder="Ex: 2"
                                     style={inputStyle}
                                 />
+                            </div>
+
+                            <div style={{ gridColumn: "1 / -1" }}>
+                                <label style={labelStyle}>Categoria</label>
+                                <select name="categoriaId" value={form.categoriaId}
+                                        onChange={handleChange} style={inputStyle}>
+                                    <option value="">Sem categoria</option>
+                                    {categories.map(c => (
+                                        <option key={c.id} value={c.id}>{c.nome}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style={labelStyle}>Tipo</label>
+                                <select name="tipoId" value={form.tipoId}
+                                        onChange={handleChange} style={inputStyle}>
+                                    <option value="">Sem tipo</option>
+                                    {types.map(t => (
+                                        <option key={t.id} value={t.id}>{t.nome}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style={labelStyle}>Ocasião</label>
+                                <select name="ocasiaoId" value={form.ocasiaoId}
+                                        onChange={handleChange} style={inputStyle}>
+                                    <option value="">Sem ocasião</option>
+                                    {occasions.map(o => (
+                                        <option key={o.id} value={o.id}>{o.nome}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{ gridColumn: "1 / -1" }}>
+                                <label style={{ ...labelStyle, display: "flex",
+                                    alignItems: "center", gap: "10px", cursor: "pointer" }}>
+                                    <input
+                                        type="checkbox"
+                                        name="kit"
+                                        checked={form.kit}
+                                        onChange={e => setForm(prev => ({
+                                            ...prev, kit: e.target.checked
+                                        }))}
+                                        style={{ width: "16px", height: "16px", accentColor: "#c9924a" }}
+                                    />
+                                    Este produto é um Kit / Combo
+                                </label>
                             </div>
 
                             <div>

@@ -10,6 +10,9 @@ import IngredientForm from "../pages/ingredients/IngredientForm";
 import IngredientList from "../pages/ingredients/IngredientList";
 import PackagingForm from "../pages/packaging/PackagingForm";
 import PackagingList from "../pages/packaging/PackagingList";
+import ProductCategorySettings from "../pages/settings/ProductCategorySettings";
+import ProductTypeSettings from "../pages/settings/ProductTypeSettings";
+import ProductOccasionSettings from "../pages/settings/ProductOccasionSettings";
 
 export default function AppRoutes() {
     return (
@@ -20,6 +23,9 @@ export default function AppRoutes() {
                 <Route path="/produtos/cadastro" element={<ProductForm />} />
                 <Route path="/produtos/editar/:id" element={<ProductForm />} />
                 <Route path="/produtos/:id/ficha-tecnica" element={<ProductTechnicalSheet />} />
+                <Route path="/configuracoes/categorias" element={<ProductCategorySettings />} />
+                <Route path="/configuracoes/tipos" element={<ProductTypeSettings />} />
+                <Route path="/configuracoes/ocasioes" element={<ProductOccasionSettings />} />
 
                 <Route path="/unidades" element={<UnitsList />} />
                 <Route path="/unidades/cadastro" element={<UnitsForm />} />

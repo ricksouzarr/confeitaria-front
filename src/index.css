@@ -12,7 +12,6 @@
 
 body {
     background: #faf8f5;
-    overflow: hidden;
 }
 
 a {
@@ -22,4 +21,21 @@ a {
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     opacity: 0.5;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f0e8;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d4c5a9;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c9924a;
 }
