@@ -16,6 +16,13 @@ const menuItems = [
 export default function MainLayout({ title, subtitle, children }) {
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
+    const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+    function handleLogout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+        window.location.href = "/login";
+    }
 
     return (
         <div className="flex min-h-screen" style={{ background: "#faf8f5", fontFamily: "Georgia, 'Times New Roman', serif" }}>
@@ -100,8 +107,6 @@ export default function MainLayout({ title, subtitle, children }) {
                         );
                     })}
                 </nav>
-
-                {/* User */}
                 <div style={{
                     padding: "14px 14px", borderTop: "1px solid #2d2926",
                     display: "flex", alignItems: "center", gap: "10px",
@@ -111,11 +116,24 @@ export default function MainLayout({ title, subtitle, children }) {
                         background: "linear-gradient(135deg, #8db4a0, #5d9078)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "13px", color: "white", fontWeight: "700",
-                    }}>A</div>
+                    }}>
+                        {usuario.nome?.charAt(0).toUpperCase() || "U"}
+                    </div>
                     {!collapsed && (
-                        <div>
-                            <div style={{ color: "#d4cfc9", fontSize: "12px", fontWeight: "600", whiteSpace: "nowrap" }}>Ana Souza</div>
-                            <div style={{ color: "#5a5450", fontSize: "10px",  }}>Proprietária</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ color: "#d4cfc9", fontSize: "12px",
+                                fontWeight: "600", whiteSpace: "nowrap",
+                                overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {usuario.nome || "Usuário"}
+                            </div>
+                            <button onClick={handleLogout} style={{
+                                background: "none", border: "none",
+                                color: "#5a5450", fontSize: "10px",
+                                cursor: "pointer", padding: 0,
+                                fontFamily: "'Poppins', system-ui, sans-serif",
+                            }}>
+                                Sair
+                            </button>
                         </div>
                     )}
                 </div>
