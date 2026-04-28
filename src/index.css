@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+:root {
+    --bg: #faf8f5;
+    --card: #ffffff;
+    --border: #ede9e3;
+    --text: #2f2a24;
+    --text-muted: #7a6f63;
+    --gold: #e8b86d;
+    --gold-dark: #c9924a;
+    --scroll-track: #f5f0e8;
+    --scroll-thumb: #d4c5a9;
+}
+
+[data-theme="dark"] {
+    --bg: #181512;
+    --card: #241f1a;
+    --border: #3a3128;
+    --text: #f5efe7;
+    --text-muted: #c4b6a5;
+    --gold: #e8b86d;
+    --gold-dark: #c9924a;
+    --scroll-track: #201b17;
+    --scroll-thumb: #6f5a3d;
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -11,11 +35,28 @@
 }
 
 body {
-    background: #faf8f5;
+    background: var(--bg);
+    color: var(--text);
 }
 
 a {
     text-decoration: none;
+    color: inherit;
+}
+
+input,
+select,
+textarea,
+button {
+    font-family: inherit;
+}
+
+input,
+select,
+textarea {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -28,14 +69,14 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 ::-webkit-scrollbar-track {
-    background: #f5f0e8;
+    background: var(--scroll-track);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #d4c5a9;
+    background: var(--scroll-thumb);
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #c9924a;
+    background: var(--gold-dark);
 }

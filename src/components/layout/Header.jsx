@@ -16,7 +16,7 @@ export default function Header() {
 
 const styles = {
     header: {
-        background: "#111827",
+        background: var(--bg);,
         color: "#fff",
         padding: "16px 24px",
         display: "flex",
