@@ -56,7 +56,6 @@ export default function ProductTechnicalSheet() {
                 packagingItemsRes,
                 ingredientsRes,
                 packagingsRes,
-                kitItemsRes,
             ] = await Promise.all([
                 api.get(`/products/${id}`),
                 api.get(`/recipe-items/product/${id}/ficha-tecnica`),
@@ -64,7 +63,6 @@ export default function ProductTechnicalSheet() {
                 api.get(`/packaging-items`),
                 api.get(`/ingredients`),
                 api.get(`/packagings`),
-                api.get(`/kit-items/kit/${id}`),
             ]);
 
             const productId = Number(id);
@@ -79,7 +77,12 @@ export default function ProductTechnicalSheet() {
             ));
             setIngredients(ingredientsRes.data || []);
             setPackagings(packagingsRes.data || []);
-            setKitItems(kitItemsRes.data || []);
+            if (productRes.data?.kit === true) {
+                const kitItemsRes = await api.get(`/kit-items/kit/${id}`);
+                setKitItems(kitItemsRes.data || []);
+            } else {
+                setKitItems([]);
+            }
         } catch (e) {
             console.error(e);
 
