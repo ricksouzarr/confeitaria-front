@@ -4,7 +4,6 @@ const api = axios.create({
     baseURL: "https://confeitaria-api-u5iw.onrender.com",
 });
 
-// envia o token em toda requisição
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -13,17 +12,31 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// redireciona para login se token expirado
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         const status = error.response?.status;
+        const url = error.config?.url ?? "";
 
-        if (status === 401 /*|| status === 403*/) {
+        // Ignora erros de autenticação na própria rota de login
+        const isAuthRoute = url.includes("/auth/");
+
+        if (status === 401 && !isAuthRoute) {
             localStorage.removeItem("token");
             localStorage.removeItem("usuario");
+
+            // Salva a rota atual para redirecionar de volta após login
+            const currentPath = window.location.pathname;
+            if (currentPath !== "/login") {
+                sessionStorage.setItem("redirectAfterLogin", currentPath);
+            }
+
             window.location.href = "/login";
         }
+
+        // 403 NÃO redireciona — é erro de permissão, não de autenticação
+        // Deixa o componente tratar com setError()
+
         return Promise.reject(error);
     }
 );

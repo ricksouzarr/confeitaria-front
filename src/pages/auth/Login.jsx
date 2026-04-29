@@ -25,7 +25,11 @@ export default function Login() {
                 nome: res.data.nome,
                 email: res.data.email,
             }));
-            navigate("/");
+
+            // Redireciona para onde o usuário estava antes de expirar
+            const redirectTo = sessionStorage.getItem("redirectAfterLogin") || "/";
+            sessionStorage.removeItem("redirectAfterLogin");
+            navigate(redirectTo);
         } catch {
             setError("Email ou senha incorretos.");
         } finally {
