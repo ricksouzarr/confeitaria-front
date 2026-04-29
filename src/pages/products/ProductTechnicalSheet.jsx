@@ -29,6 +29,9 @@ export default function ProductTechnicalSheet() {
     const [savingPackaging, setSavingPackaging] = useState(false);
     const [packagingFormError, setPackagingFormError] = useState("");
 
+    const [kitItems, setKitItems] = useState([]);
+    const [, setKitModalOpen] = useState(false);
+
     useEffect(() => {
         loadData();
     }, [id]);
@@ -53,6 +56,7 @@ export default function ProductTechnicalSheet() {
                 packagingItemsRes,
                 ingredientsRes,
                 packagingsRes,
+                kitItemsRes,
             ] = await Promise.all([
                 api.get(`/products/${id}`),
                 api.get(`/recipe-items/product/${id}/ficha-tecnica`),
@@ -60,6 +64,7 @@ export default function ProductTechnicalSheet() {
                 api.get(`/packaging-items`),
                 api.get(`/ingredients`),
                 api.get(`/packagings`),
+                api.get(`/kit-items/kit/${id}`),
             ]);
 
             const productId = Number(id);
@@ -74,6 +79,7 @@ export default function ProductTechnicalSheet() {
             ));
             setIngredients(ingredientsRes.data || []);
             setPackagings(packagingsRes.data || []);
+            setKitItems(kitItemsRes.data || []);
         } catch (e) {
             console.error(e);
 
@@ -189,6 +195,21 @@ export default function ProductTechnicalSheet() {
             setPackagingFormError("Erro ao adicionar embalagem.");
         } finally {
             setSavingPackaging(false);
+        }
+    }
+    async function handleDeleteKitItem(itemId) {
+        const confirmed = window.confirm(
+            "Tem certeza que deseja remover este produto do kit?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+            await api.delete(`/kit-items/${itemId}`);
+            await loadData();
+        } catch (e) {
+            console.error(e);
+            setError("Erro ao remover produto do kit.");
         }
     }
 
@@ -503,6 +524,37 @@ export default function ProductTechnicalSheet() {
                         />
                     </form>
                 </ModalOverlay>
+            )}
+            {product?.kit && (
+                <ItemsTableCard
+                    title="Produtos do Kit"
+                    subtitle="Produtos acabados que compõem este kit"
+                    emptyText="Nenhum produto vinculado a este kit."
+                    actionLabel="+ Adicionar produto"
+                    onAction={() => setKitModalOpen(true)}
+                    columns={[
+                        { key: "nome",      label: "Produto" },
+                        { key: "quantidade",label: "Quantidade" },
+                        { key: "custoUnit", label: "Custo unitário" },
+                        { key: "custoTotal",label: "Custo total" },
+                        { key: "acoes",     label: "Ações" },
+                    ]}
+                    rows={kitItems.map((item) => ({
+                        id:        item.id,
+                        nome:      item.produto?.nome || "-",
+                        quantidade:formatNumber(item.quantidade),
+                        custoUnit: formatCurrency(item.custoProduto),
+                        custoTotal:formatCurrency(item.custoTotal),
+                        acoes: (
+                            <button
+                                onClick={() => handleDeleteKitItem(item.id)}
+                                style={deleteButtonStyle}
+                            >
+                                Excluir
+                            </button>
+                        ),
+                    }))}
+                />
             )}
         </MainLayout>
     );
