@@ -5,6 +5,7 @@ import api from "../../services/api";
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
+    const [fichaTecnicas, setFichaTecnicas] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [hoveredRow, setHoveredRow] = useState(null);
@@ -18,10 +19,24 @@ export default function ProductList() {
     async function loadProducts() {
         setLoading(true);
         setError("");
-
         try {
             const res = await api.get("/products");
-            setProducts(res.data);
+            const prods = res.data;
+            setProducts(prods);
+
+            // Busca ficha técnica de cada produto para pegar preços de venda
+            const fichaPromises = prods.map((p) =>
+                api
+                    .get(`/recipe-items/product/${p.id}/ficha-tecnica`)
+                    .then((r) => ({ id: p.id, data: r.data }))
+                    .catch(() => ({ id: p.id, data: null }))
+            );
+            const fichas = await Promise.all(fichaPromises);
+            const fichaMap = {};
+            fichas.forEach(({ id, data }) => {
+                fichaMap[id] = data;
+            });
+            setFichaTecnicas(fichaMap);
         } catch {
             setError("Erro ao carregar produtos");
         } finally {
@@ -33,21 +48,26 @@ export default function ProductList() {
         const confirmed = window.confirm(
             `Tem certeza que deseja excluir o produto "${productName}"?`
         );
-
         if (!confirmed) return;
 
         setDeletingId(productId);
         setError("");
-
         try {
             await api.delete(`/products/${productId}`);
             setProducts((prev) => prev.filter((p) => p.id !== productId));
-        } catch (e) {
-            console.error(e);
+        } catch {
             setError("Erro ao excluir produto.");
         } finally {
             setDeletingId(null);
         }
+    }
+
+    function formatCurrency(value) {
+        const number = Number(value || 0);
+        return number.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        });
     }
 
     const filtered = products.filter((p) =>
@@ -56,133 +76,39 @@ export default function ProductList() {
 
     return (
         <MainLayout title="Produtos" subtitle="Gerencie seu cardápio e precificação">
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: "20px",
-                }}
-            >
-                <div
-                    style={{
-                        background: "#fff",
-                        border: "1px solid #e8e3da",
-                        borderRadius: "8px",
-                        padding: "8px 14px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                    }}
-                >
+            {/* Top bar */}
+            <div style={topBarStyle}>
+                <div style={searchBoxStyle}>
                     <span style={{ color: "#9b948c", fontSize: "13px" }}>🔍</span>
                     <input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Buscar produtos..."
-                        style={{
-                            border: "none",
-                            background: "transparent",
-                            outline: "none",
-                            fontSize: "13px",
-                            color: "#1c1917",
-                            width: "200px",
-
-                        }}
+                        style={searchInputStyle}
                     />
                 </div>
 
-                <Link
-                    to="/produtos/cadastro"
-                    style={{
-                        background: "linear-gradient(135deg, #e8b86d 0%, #c9924a 100%)",
-                        borderRadius: "8px",
-                        padding: "9px 18px",
-                        color: "white",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                        textDecoration: "none",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        boxShadow: "0 2px 8px rgba(232,184,109,0.4)",
-                    }}
-                >
+                <Link to="/produtos/cadastro" style={newButtonStyle}>
                     + Novo Produto
                 </Link>
             </div>
 
-            {loading && (
-                <div
-                    style={{
-                        background: "#fff",
-                        borderRadius: "12px",
-                        padding: "32px",
-                        textAlign: "center",
-                        border: "1px solid #ede9e3",
-                        color: "#9b948c",
-                        fontSize: "14px",
-                    }}
-                >
-                    Carregando produtos...
-                </div>
-            )}
+            {/* Loading */}
+            {loading && <div style={loadingStyle}>Carregando produtos...</div>}
 
-            {error && (
-                <div
-                    style={{
-                        background: "#fff8f8",
-                        borderRadius: "12px",
-                        padding: "20px",
-                        border: "1px solid #fddcdc",
-                        color: "#c05050",
-                        fontSize: "14px",
-                        marginBottom: "16px",
-                    }}
-                >
-                    {error}
-                </div>
-            )}
+            {/* Error */}
+            {error && <div style={errorBannerStyle}>{error}</div>}
 
+            {/* Table */}
             {!loading && !error && (
-                <div
-                    style={{
-                        background: "#fff",
-                        borderRadius: "14px",
-                        border: "1px solid #ede9e3",
-                        overflow: "hidden",
-                    }}
-                >
-                    <div
-                        style={{
-                            padding: "14px 20px",
-                            borderBottom: "1px solid #f2ede6",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                        }}
-                    >
+                <div style={tableWrapperStyle}>
+                    {/* Table header */}
+                    <div style={tableHeaderBarStyle}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <span
-                                style={{
-                                    fontSize: "14px",
-                                    fontWeight: "700",
-                                    color: "#1c1917",
-                                }}
-                            >
-                                Lista de Produtos
-                            </span>
-                            <span
-                                style={{
-                                    background: "#f5f0e8",
-                                    color: "#8a6f3e",
-                                    fontSize: "11px",
-                                    fontWeight: "600",
-                                    padding: "2px 8px",
-                                    borderRadius: "20px",
-                                }}
-                            >
-                                {filtered.length} {filtered.length === 1 ? "item" : "itens"}
+                            <span style={tableHeaderTitleStyle}>Lista de Produtos</span>
+                            <span style={badgeStyle}>
+                                {filtered.length}{" "}
+                                {filtered.length === 1 ? "item" : "itens"}
                             </span>
                         </div>
                     </div>
@@ -191,28 +117,22 @@ export default function ProductList() {
                         <thead>
                         <tr style={{ background: "#faf8f5" }}>
                             {[
-                                "Código do Produto",
-                                "Nome",
-                                "Rendimento",
-                                "Markup Total",
-                                "Markup Rendimento",
-                                "Horas M.O.",
-                                "Ações",
+                                { label: "ID",              width: "60px"  },
+                                { label: "Nome",            width: "auto"  },
+                                { label: "Rendimento",      width: "110px" },
+                                { label: "Preço de Venda",  width: "140px" },
+                                { label: "Preço/Porção",    width: "140px" },
+                                { label: "Kit",             width: "70px"  },
+                                { label: "Ações",           width: "240px" },
                             ].map((h) => (
                                 <th
-                                    key={h}
+                                    key={h.label}
                                     style={{
-                                        padding: "10px 16px",
-                                        textAlign: "left",
-                                        fontSize: "10px",
-                                        color: "#9b948c",
-                                        fontWeight: "700",
-                                        letterSpacing: "0.8px",
-                                        textTransform: "uppercase",
-                                        borderBottom: "1px solid #ede9e3",
+                                        ...thStyle,
+                                        width: h.width,
                                     }}
                                 >
-                                    {h}
+                                    {h.label}
                                 </th>
                             ))}
                         </tr>
@@ -221,205 +141,114 @@ export default function ProductList() {
                         <tbody>
                         {filtered.length === 0 && (
                             <tr>
-                                <td
-                                    colSpan={7}
-                                    style={{
-                                        padding: "32px 16px",
-                                        textAlign: "center",
-                                        color: "#9b948c",
-                                        fontSize: "13px",
-                                    }}
-                                >
+                                <td colSpan={7} style={emptyRowStyle}>
                                     Nenhum produto encontrado.
                                 </td>
                             </tr>
                         )}
 
-                        {filtered.map((p) => (
-                            <tr
-                                key={p.id}
-                                onMouseEnter={() => setHoveredRow(p.id)}
-                                onMouseLeave={() => setHoveredRow(null)}
-                                style={{
-                                    borderBottom: "1px solid #f5f2ee",
-                                    background:
-                                        hoveredRow === p.id ? "#fdf9f4" : "transparent",
-                                    transition: "background 0.12s ease",
-                                }}
-                            >
-                                <td
+                        {filtered.map((p) => {
+                            const ficha = fichaTecnicas[p.id];
+                            const precoTotal  = ficha?.precoTotal   ?? null;
+                            const precoPorcao = ficha?.precoPorPorcao ?? null;
+
+                            return (
+                                <tr
+                                    key={p.id}
+                                    onMouseEnter={() => setHoveredRow(p.id)}
+                                    onMouseLeave={() => setHoveredRow(null)}
                                     style={{
-                                        padding: "14px 16px",
-                                        fontSize: "13px",
-                                        fontWeight: "600",
-                                        color: "#8a6f3e",
+                                        borderBottom: "1px solid #f5f2ee",
+                                        background:
+                                            hoveredRow === p.id
+                                                ? "#fdf9f4"
+                                                : "transparent",
+                                        transition: "background 0.12s ease",
                                     }}
                                 >
-                                    #{p.id}
-                                </td>
+                                    {/* ID — compacto, sem # */}
+                                    <td style={{ ...tdStyle, color: "#b0a89e", fontWeight: "600", fontSize: "12px" }}>
+                                        {p.id}
+                                    </td>
 
-                                <td style={{ padding: "14px 16px" }}>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "10px",
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                width: "32px",
-                                                height: "32px",
-                                                borderRadius: "8px",
-                                                background:
-                                                    "linear-gradient(135deg, #f5e6c8, #ead4a0)",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                fontSize: "15px",
-                                                flexShrink: 0,
-                                            }}
-                                        >
-                                            🎂
-                                        </div>
-                                        <span
-                                            style={{
-                                                fontSize: "13px",
-                                                fontWeight: "600",
-                                                color: "#1c1917",
-                                            }}
-                                        >
+                                    {/* Nome — sem ícone de bolo */}
+                                    <td style={tdStyle}>
+                                            <span style={{ fontSize: "13px", fontWeight: "600", color: "#1c1917" }}>
                                                 {p.nome}
                                             </span>
-                                    </div>
-                                </td>
+                                    </td>
 
-                                <td
-                                    style={{
-                                        padding: "14px 16px",
-                                        fontSize: "13px",
-                                        color: "#5a5450",
-                                    }}
-                                >
-                                    {p.rendimento}
-                                </td>
+                                    {/* Rendimento */}
+                                    <td style={{ ...tdStyle, color: "#5a5450" }}>
+                                        {p.rendimento}
+                                    </td>
 
-                                <td
-                                    style={{
-                                        padding: "14px 16px",
-                                        fontSize: "13px",
-                                        color: "#5a5450",
-                                    }}
-                                >
-                                    {p.markupTotal}
-                                </td>
+                                    {/* Preço de venda total */}
+                                    <td style={tdStyle}>
+                                        {precoTotal !== null ? (
+                                            <span style={priceChipStyle}>
+                                                    {formatCurrency(precoTotal)}
+                                                </span>
+                                        ) : (
+                                            <span style={noPriceStyle}>—</span>
+                                        )}
+                                    </td>
 
-                                <td
-                                    style={{
-                                        padding: "14px 16px",
-                                        fontSize: "13px",
-                                        color: "#5a5450",
-                                    }}
-                                >
-                                    {p.markupRendimento}
-                                </td>
+                                    {/* Preço por porção */}
+                                    <td style={tdStyle}>
+                                        {precoPorcao !== null ? (
+                                            <span style={pricePorcaoChipStyle}>
+                                                    {formatCurrency(precoPorcao)}
+                                                </span>
+                                        ) : (
+                                            <span style={noPriceStyle}>—</span>
+                                        )}
+                                    </td>
 
-                                <td
-                                    style={{
-                                        padding: "14px 16px",
-                                        fontSize: "13px",
-                                        color: "#5a5450",
-                                    }}
-                                >
-                                    {p.horasMaoDeObra}h
-                                </td>
+                                    {/* Kit badge */}
+                                    <td style={{ ...tdStyle, textAlign: "center" }}>
+                                        {p.kit ? (
+                                            <span style={kitBadgeStyle}>Kit</span>
+                                        ) : (
+                                            <span style={notKitBadgeStyle}>—</span>
+                                        )}
+                                    </td>
 
-                                <td style={{ padding: "14px 16px" }}>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            gap: "8px",
-                                            alignItems: "center",
-                                            flexWrap: "wrap",
-                                        }}
-                                    >
-                                        <Link
-                                            to={`/produtos/${p.id}/ficha-tecnica`}
-                                            style={{
-                                                background: "linear-gradient(135deg, #e8b86d 0%, #c9924a 100%)",
-                                                color: "#fff",
-                                                borderRadius: "8px",
-                                                padding: "8px 12px",
-                                                fontSize: "12px",
-                                                fontWeight: "600",
-                                                textDecoration: "none",
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                boxShadow: "0 2px 8px rgba(232,184,109,0.28)",
-                                            }}
-                                        >
-                                            Ficha Técnica
-                                        </Link>
+                                    {/* Ações */}
+                                    <td style={tdStyle}>
+                                        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                                            <Link
+                                                to={`/produtos/${p.id}/ficha-tecnica`}
+                                                style={btnFichaTecnicaStyle}
+                                            >
+                                                Ficha Técnica
+                                            </Link>
 
-                                        <Link
-                                            to={`/produtos/editar/${p.id}`}
-                                            style={{
-                                                border: "1px solid #e8e3da",
-                                                background: "#fff",
-                                                color: "#8a6f3e",
-                                                borderRadius: "8px",
-                                                padding: "8px 12px",
-                                                fontSize: "12px",
-                                                fontWeight: "600",
-                                                textDecoration: "none",
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            Alterar
-                                        </Link>
+                                            <Link
+                                                to={`/produtos/editar/${p.id}`}
+                                                style={btnAlterarStyle}
+                                            >
+                                                Alterar
+                                            </Link>
 
-                                        <button
-                                            onClick={() => handleDelete(p.id, p.nome)}
-                                            disabled={deletingId === p.id}
-                                            style={{
-                                                border: "1px solid #f2caca",
-                                                background: deletingId === p.id ? "#f9eeee" : "#fff8f8",
-                                                color: "#c05050",
-                                                borderRadius: "8px",
-                                                padding: "8px 12px",
-                                                fontSize: "12px",
-                                                fontWeight: "600",
-                                                cursor: deletingId === p.id ? "not-allowed" : "pointer",
-                                                opacity: deletingId === p.id ? 0.7 : 1,
-                                            }}
-                                        >
-                                            {deletingId === p.id ? "Excluindo..." : "Excluir"}
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                                            <button
+                                                onClick={() => handleDelete(p.id, p.nome)}
+                                                disabled={deletingId === p.id}
+                                                style={btnExcluirStyle(deletingId === p.id)}
+                                            >
+                                                {deletingId === p.id ? "..." : "Excluir"}
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         </tbody>
                     </table>
 
-                    <div
-                        style={{
-                            padding: "12px 20px",
-                            borderTop: "1px solid #f2ede6",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <span
-                            style={{
-                                fontSize: "11px",
-                                color: "#9b948c",
-                            }}
-                        >
+                    {/* Footer */}
+                    <div style={tableFooterStyle}>
+                        <span style={{ fontSize: "11px", color: "#9b948c" }}>
                             Mostrando {filtered.length} de {products.length} produtos
                         </span>
                     </div>
@@ -428,3 +257,212 @@ export default function ProductList() {
         </MainLayout>
     );
 }
+
+/* ─── Styles ─── */
+
+const topBarStyle = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "20px",
+};
+
+const searchBoxStyle = {
+    background: "#fff",
+    border: "1px solid #e8e3da",
+    borderRadius: "8px",
+    padding: "8px 14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+};
+
+const searchInputStyle = {
+    border: "none",
+    background: "transparent",
+    outline: "none",
+    fontSize: "13px",
+    color: "#1c1917",
+    width: "200px",
+};
+
+const newButtonStyle = {
+    background: "linear-gradient(135deg, #e8b86d 0%, #c9924a 100%)",
+    borderRadius: "8px",
+    padding: "9px 18px",
+    color: "white",
+    fontSize: "13px",
+    fontWeight: "600",
+    textDecoration: "none",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    boxShadow: "0 2px 8px rgba(232,184,109,0.4)",
+};
+
+const loadingStyle = {
+    background: "#fff",
+    borderRadius: "12px",
+    padding: "32px",
+    textAlign: "center",
+    border: "1px solid #ede9e3",
+    color: "#9b948c",
+    fontSize: "14px",
+};
+
+const errorBannerStyle = {
+    background: "#fff8f8",
+    borderRadius: "12px",
+    padding: "20px",
+    border: "1px solid #fddcdc",
+    color: "#c05050",
+    fontSize: "14px",
+    marginBottom: "16px",
+};
+
+const tableWrapperStyle = {
+    background: "#fff",
+    borderRadius: "14px",
+    border: "1px solid #ede9e3",
+    overflow: "hidden",
+};
+
+const tableHeaderBarStyle = {
+    padding: "14px 20px",
+    borderBottom: "1px solid #f2ede6",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+};
+
+const tableHeaderTitleStyle = {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#1c1917",
+};
+
+const badgeStyle = {
+    background: "#f5f0e8",
+    color: "#8a6f3e",
+    fontSize: "11px",
+    fontWeight: "600",
+    padding: "2px 8px",
+    borderRadius: "20px",
+};
+
+const thStyle = {
+    padding: "10px 16px",
+    textAlign: "left",
+    fontSize: "10px",
+    color: "#9b948c",
+    fontWeight: "700",
+    letterSpacing: "0.8px",
+    textTransform: "uppercase",
+    borderBottom: "1px solid #ede9e3",
+};
+
+const tdStyle = {
+    padding: "13px 16px",
+    fontSize: "13px",
+    color: "#5a5450",
+};
+
+const emptyRowStyle = {
+    padding: "32px 16px",
+    textAlign: "center",
+    color: "#9b948c",
+    fontSize: "13px",
+};
+
+const tableFooterStyle = {
+    padding: "12px 20px",
+    borderTop: "1px solid #f2ede6",
+};
+
+/* Price chips */
+const priceChipStyle = {
+    display: "inline-block",
+    background: "linear-gradient(135deg, rgba(232,184,109,0.15) 0%, rgba(201,146,74,0.1) 100%)",
+    color: "#8a6f3e",
+    fontWeight: "700",
+    fontSize: "13px",
+    padding: "3px 10px",
+    borderRadius: "20px",
+    border: "1px solid rgba(232,184,109,0.3)",
+};
+
+const pricePorcaoChipStyle = {
+    display: "inline-block",
+    background: "rgba(141,180,160,0.12)",
+    color: "#4a7a62",
+    fontWeight: "700",
+    fontSize: "13px",
+    padding: "3px 10px",
+    borderRadius: "20px",
+    border: "1px solid rgba(141,180,160,0.3)",
+};
+
+const noPriceStyle = {
+    color: "#c4bdb7",
+    fontSize: "14px",
+};
+
+/* Kit badges */
+const kitBadgeStyle = {
+    display: "inline-block",
+    background: "rgba(130,100,200,0.12)",
+    color: "#6a4fa0",
+    fontWeight: "700",
+    fontSize: "10px",
+    padding: "3px 8px",
+    borderRadius: "20px",
+    border: "1px solid rgba(130,100,200,0.25)",
+    letterSpacing: "0.3px",
+};
+
+const notKitBadgeStyle = {
+    color: "#c4bdb7",
+    fontSize: "14px",
+};
+
+/* Action buttons */
+const btnFichaTecnicaStyle = {
+    background: "linear-gradient(135deg, #e8b86d 0%, #c9924a 100%)",
+    color: "#fff",
+    borderRadius: "7px",
+    padding: "8px 20px",
+    fontSize: "11px",
+    fontWeight: "600",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    whiteSpace: "nowrap",
+    minWidth: "120px",
+    boxShadow: "0 2px 6px rgba(232,184,109,0.28)",
+};
+
+const btnAlterarStyle = {
+    border: "1px solid #e8e3da",
+    background: "#fff",
+    color: "#8a6f3e",
+    borderRadius: "7px",
+    padding: "7px 11px",
+    fontSize: "11px",
+    fontWeight: "600",
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+};
+
+const btnExcluirStyle = (disabled) => ({
+    border: "1px solid #f2caca",
+    background: disabled ? "#f9eeee" : "#fff8f8",
+    color: "#c05050",
+    borderRadius: "7px",
+    padding: "7px 11px",
+    fontSize: "11px",
+    fontWeight: "600",
+    cursor: disabled ? "not-allowed" : "pointer",
+    opacity: disabled ? 0.7 : 1,
+});
