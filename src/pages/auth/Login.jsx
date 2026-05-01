@@ -21,10 +21,12 @@ export default function Login() {
         try {
             const res = await api.post("/auth/login", form);
             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("refreshToken", res.data.refreshToken);
             localStorage.setItem("usuario", JSON.stringify({
                 nome: res.data.nome,
                 email: res.data.email,
             }));
+            navigate("/");
 
             // Redireciona para onde o usuário estava antes de expirar
             const redirectTo = sessionStorage.getItem("redirectAfterLogin") || "/";
